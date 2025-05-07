@@ -1,0 +1,22 @@
+### react ###
+.DS_*
+logs
+**/*.backup.*
+**/*.back.*
+
+*.sublime*
+
+psd
+thumb
+sketch
+
+# End react
+
+#directories
+bower_components
+node_modules
+dist
+
+#files
+*.tgz
+*.log
