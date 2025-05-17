@@ -2,37 +2,6 @@ import { app, Menu, BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 
-// menu template
-const menuTemplate = [
-  {
-    label: 'Performance',
-    submenu: [
-      {
-        label: 'Themes',
-        submenu: [
-          {
-            label: 'Light',
-            click: () => {
-              nativeTheme.themeSource = 'light'
-            }
-          },
-          {
-            label: 'Dark',
-            click: () => {
-              nativeTheme.themeSource = 'dark'
-            }
-          },
-          {
-            label: 'System',
-            click: () => {
-              nativeTheme.themeSource = 'system'
-            }
-          }
-        ]
-      }
-    ]
-  }
-];
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -46,6 +15,8 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
     },
   });
 
@@ -57,7 +28,7 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   ipcMain.handle('dark-mode:toggle', () => {
     if (nativeTheme.shouldUseDarkColors) {
@@ -71,6 +42,41 @@ const createWindow = () => {
   ipcMain.handle('dark-mode:system', () => {
     nativeTheme.themeSource = 'system'
   })
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'Performance',
+      submenu: [
+        {
+          label: 'Themes',
+          submenu: [
+            {
+              label: 'Light',
+              click: () => {
+                nativeTheme.themeSource = 'light'
+                mainWindow.webContents.send('themeChange', 'light')
+              }
+            },
+            {
+              label: 'Dark',
+              click: () => {
+                nativeTheme.themeSource = 'dark'
+                mainWindow.webContents.send('themeChange', 'dark')
+              }
+            },
+            {
+              label: 'System',
+              click: () => {
+                nativeTheme.themeSource = 'system'
+                mainWindow.webContents.send('themeChange', 'system')
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]);
+  Menu.setApplicationMenu(menu);
 };
 
 // This method will be called when Electron has finished
@@ -78,17 +84,12 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
-  // Set the application menu
-  const menu = Menu.buildFromTemplate(menuTemplate);
-  Menu.setApplicationMenu(menu);
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
-      const menu = Menu.buildFromTemplate(menuTemplate);
-      Menu.setApplicationMenu(menu);
     }
   });
 });

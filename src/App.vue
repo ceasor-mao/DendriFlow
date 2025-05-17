@@ -1,5 +1,8 @@
+<script setup>
+window.themeMode.onUpdateTheme((value) => {
+  console.log('Theme updated:', value);
+})
+</script>
+
 <template>
-  <p>Current theme source: <strong id="theme-source">System</strong></p>
-  <button id="toggle-dark-mode">Toggle Dark Mode</button>
-  <button id="reset-to-system">Reset to System Theme</button>
 </template>
