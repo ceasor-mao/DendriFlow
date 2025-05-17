@@ -1,8 +1,10 @@
 <script setup>
-window.themeMode.onUpdateTheme((value) => {
-  console.log('Theme updated:', value);
-})
+
 </script>
 
 <template>
+  <div>
+    <h1>Test</h1>
+    <h2>Test</h2>
+  </div>
 </template>
