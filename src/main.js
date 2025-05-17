@@ -1,6 +1,38 @@
-import { app, BrowserWindow, ipcMain, nativeTheme } from 'electron';
+import { app, Menu, BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+
+// menu template
+const menuTemplate = [
+  {
+    label: 'Performance',
+    submenu: [
+      {
+        label: 'Themes',
+        submenu: [
+          {
+            label: 'Light',
+            click: () => {
+              nativeTheme.themeSource = 'light'
+            }
+          },
+          {
+            label: 'Dark',
+            click: () => {
+              nativeTheme.themeSource = 'dark'
+            }
+          },
+          {
+            label: 'System',
+            click: () => {
+              nativeTheme.themeSource = 'system'
+            }
+          }
+        ]
+      }
+    ]
+  }
+];
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -46,12 +78,17 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
+  // Set the application menu
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
+      const menu = Menu.buildFromTemplate(menuTemplate);
+      Menu.setApplicationMenu(menu);
     }
   });
 });
