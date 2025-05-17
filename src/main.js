@@ -13,7 +13,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-    preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -25,7 +25,7 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   ipcMain.handle('dark-mode:toggle', () => {
     if (nativeTheme.shouldUseDarkColors) {
