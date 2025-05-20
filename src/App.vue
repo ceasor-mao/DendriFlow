@@ -2,6 +2,7 @@
   <div 
     class="canvas-container overflow-hidden"
     @mousedown="onMouseDown"
+    ref="container"
   >
     <div 
       class="background-pattern"
@@ -16,19 +17,37 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, transformVNodeArgs } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const patternType = ref('grid') // 'grid' or 'dots'
 const gridSize = ref(24)
 const lineColor = ref('rgba(0, 0, 0, 0.1)')
 
-const offset = ref({ x:0, y:0 })
+const offset = ref({ x:-2000, y:-2000 })
 const startPos = ref({ x:0, y:0 })
 const isDragging = ref(false)
 
+const container = ref(null)
+const containerSize = ref({ width: 0, height: 0 })
+
 const maxOffset = {
-  x: 2000,   // 允许最大右移2000px
-  y: 2000    // 允许最大下移2000px
+  x: 2000,
+  y: 2000
+}
+
+const updateContainerSize = () => {
+  if (container.value) {
+    const rect = container.value.getBoundingClientRect()
+    containerSize.value = {
+      width: rect.width,
+      height: rect.height
+    }
+    // 动态计算初始居中位置（如果需要）
+    // offset.value = {
+    //   x: -(rect.width * 0.5),
+    //   y: -(rect.height * 0.5)
+    // }
+  }
 }
 
 const backgroundStyle = computed(() => {
@@ -85,11 +104,16 @@ const onMouseUp = () => {
 }
 
 onMounted(() => {
+  updateContainerSize()
+  window.addEventListener('resize', updateContainerSize)
+
   window.addEventListener('mouseup', onMouseUp)
   window.addEventListener('mousemove', onMouseMove)
 })
 
 onUnmounted(() => {
+  window.removeEventListener('resize', updateContainerSize)
+
   window.removeEventListener('mouseup', onMouseUp)
   window.removeEventListener('mousemove', onMouseMove)
 })
@@ -102,43 +126,49 @@ defineExpose({
 </script>
 
 <style>
-.background-pattern {
-  position: absolute;
-  width: calc(100% + 4000px);
-  height: calc(100% + 4000px);
-  z-index: 0;
-  background-image: 
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: var(--grid-size) var(--grid-size);
-}
-
-.content-layer {
-  position: relative;
-  z-index: 1;
-  transform: translate(-50%, -50%);
-  left: 50%;
-  height: 50%;
-}
-
-.overflow-hidden {
-  overflow: hidden !important;
-}
-.canvas-container {
-  position: fixed; /* 使用fixed定位防止页面空间计算 */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overscroll-behavior: none; /* 阻止边缘回弹效果 */
+/* Hide scrollbar */
+html {
+  overflow: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 /* Chrome/Safari */
 ::-webkit-scrollbar {
   display: none;
 }
-html {
-  overflow: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+.canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overscroll-behavior: none;
+}
+
+.background-pattern {
+  position: absolute;
+  width: 4000px;
+  height: 4000px;
+  z-index: 0;
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  transform-origin: center center;
+}
+
+.content-layer {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background-color: black;
 }
 </style>
