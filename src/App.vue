@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 
 // 响应式参数
-const patternType = ref('dots') // 'grid' 或 'dots'
+const patternType = ref('grid') // 'grid' 或 'dots'
 const gridSize = ref(24)
 const lineColor = ref('rgba(0, 0, 0, 0.1)')
 

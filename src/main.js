@@ -1,4 +1,4 @@
-import { app, Menu, BrowserWindow, ipcMain, nativeTheme } from 'electron';
+import { app, dialog, Menu, BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 
@@ -44,6 +44,19 @@ const createWindow = () => {
   })
 
   const menu = Menu.buildFromTemplate([
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open Project',
+          click: () => {
+            const result = dialog.showOpenDialogSync({
+              properties: ['openDirectory']
+            });
+          }
+        }
+      ]
+    },
     {
       label: 'Performance',
       submenu: [
